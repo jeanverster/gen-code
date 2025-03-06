@@ -39,9 +39,9 @@ export async function POST(req: Request) {
     const prompt = `STYLE: ${style}. LANGUAGE: ${language}. CODE: ${code}`;
 
     const result = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-4o-mini-2024-07-18"),
       system: systemPrompt,
-      temperature: 0.7,
+      temperature: 0.5,
       prompt,
     });
 
