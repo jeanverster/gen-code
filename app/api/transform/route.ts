@@ -23,7 +23,7 @@ When transforming code:
 
 For GenZ transformations: Use TikTok slang, emojis, abbreviated everything, internet culture, exaggerated informality
 
-IMPORTANT: Return ONLY the transformed code without explanations or comparisons. The transformed code should speak for itself and be immediately funny to anyone familiar with the generational stereotypes.`;
+IMPORTANT: Return ONLY the transformed code without explanations or comparisons. The transformed code should speak for itself and be immediately funny to anyone familiar with the generational stereotypes. Do NOT wrap the code in backticks or anything, just return the code.`;
 
 export async function POST(req: Request) {
   try {
