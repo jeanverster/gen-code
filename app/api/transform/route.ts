@@ -1,12 +1,29 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import OpenAI from 'openai';
-import { NextResponse } from 'next/server';
+import { anthropic } from "@ai-sdk/anthropic";
+import { generateText } from "ai";
+import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Mark route as dynamic
+export const dynamic = "force-dynamic";
 
-export const runtime = 'edge';
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+const systemPrompt = `You are CodeVibe Translator, a creative code transformation AI that reimagines programming code through the cultural lens of different generations.
+
+Your primary goal is to create FUNNY and ENTERTAINING transformed code that captures the essence, slang, cultural references, and communication style of Gen Z while maintaining the general functionality.
+
+When transforming code:
+- Be CREATIVE with function names, variable names, and comments
+- Completely reshape syntax and style if it makes the transformation funnier
+- Add generation-specific jokes, references, and expressions throughout
+- Feel free to exaggerate stereotypes for humorous effect
+- Maintain the general logic and purpose of the code, but express it in the voice of the generation
+- Add humorous comments that sound like someone from that generation wrote them
+- Change programming paradigms if it fits the generational style better
+
+For GenZ transformations: Use TikTok slang, emojis, abbreviated everything, internet culture, exaggerated informality
+
+IMPORTANT: Return ONLY the transformed code without explanations or comparisons. The transformed code should speak for itself and be immediately funny to anyone familiar with the generational stereotypes.`;
 
 export async function POST(req: Request) {
   try {
@@ -14,30 +31,30 @@ export async function POST(req: Request) {
 
     if (!code || !style || !language) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const prompt = `Transform this ${language} code into ${style} generational speaking style. 
-    Maintain the same functionality and formatting, but add comments and variable names that reflect the speaking style of ${style}.
-    Original code:
-    ${code}`;
+    const prompt = `STYLE: ${style}. LANGUAGE: ${language}. CODE: ${code}`;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
+    const result = await generateText({
+      model: anthropic("claude-3-5-haiku-latest"),
+      system: systemPrompt,
       temperature: 0.7,
-      stream: true,
+      prompt,
     });
 
-    const stream = OpenAIStream(response);
-    return new StreamingTextResponse(stream);
+    return NextResponse.json(result.text);
   } catch (error) {
-    console.error('Error in transform route:', error);
+    console.error("Error in transform route:", error);
     return NextResponse.json(
-      { error: 'Failed to transform code' },
+      { error: "Failed to transform code" },
       { status: 500 }
     );
   }
+}
+
+export async function GET(req: Request) {
+  return NextResponse.json({ message: "Hello, world!" });
 }
