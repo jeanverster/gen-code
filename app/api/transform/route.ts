@@ -1,4 +1,4 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const prompt = `STYLE: ${style}. LANGUAGE: ${language}. CODE: ${code}`;
 
     const result = await generateText({
-      model: anthropic("claude-3-5-haiku-latest"),
+      model: openai("gpt-4o-mini"),
       system: systemPrompt,
       temperature: 0.7,
       prompt,
